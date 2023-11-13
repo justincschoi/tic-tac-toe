@@ -34,6 +34,7 @@ const player = function (sign) {
 
 const displayController = (function () {
     const boardContainer = document.querySelector('.board-container');
+    const playerTurn = document.querySelector('.player-turn');
     const fields = boardContainer.querySelectorAll('.field');
 
     const renderGameBoard = () => {
@@ -42,15 +43,21 @@ const displayController = (function () {
         })
     };
 
+    const updatePlayerTurnMsg = () => {
+        playerTurn.textContent = `Player ${gameController.getCurrentPlayer()} turn`;
+    }
+
     fields.forEach((field, index) => {
         field.addEventListener('click', () => {
             gameController.playRound(index);
             renderGameBoard();
+            updatePlayerTurnMsg();
         })
     })
 
     return {
-        renderGameBoard
+        renderGameBoard,
+        updatePlayerTurnMsg
     }
 })();
 
@@ -97,8 +104,10 @@ const gameController = (function () {
             gameBoard.setField(index, getCurrentPlayer());
             const check = checkWin(getCurrentPlayer());
             if (check) {
-                console.log(round)
                 gameOver = true;
+                displayController.updatePlayerTurnMsg();
+            } else {
+                displayController.updatePlayerTurnMsg();
             }
 
         }
@@ -111,7 +120,8 @@ const gameController = (function () {
 
     return {
         checkWin,
-        playRound
+        playRound,
+        getCurrentPlayer
     }
 })();
 
