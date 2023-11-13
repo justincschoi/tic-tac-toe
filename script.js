@@ -1,12 +1,16 @@
 const gameBoard = (function () {
-    const board = ['', '', '', '', '', '', '', '', ''];
+    const board = [
+        '', '', '',
+        '', '', '',
+        '', '', ''
+    ];
 
     const getBoard = () => {
         return board;
     }
 
     const setField = (index, sign) => {
-        board[index] = sign;
+        return board[index] = sign;
     }
 
     const getField = (index) => {
@@ -20,9 +24,11 @@ const gameBoard = (function () {
     }
 })();
 
-const user = function (sign) {
+const player = function (sign) {
+    const getSign = () => sign;
+
     return {
-        sign
+        getSign
     };
 }
 
@@ -38,7 +44,7 @@ const displayController = (function () {
 
     fields.forEach((field, index) => {
         field.addEventListener('click', () => {
-            gameBoard.setField(index, 'x');
+            gameController.playRound(index);
             renderGameBoard();
         })
     })
@@ -49,8 +55,63 @@ const displayController = (function () {
 })();
 
 const gameController = (function () {
-    const player1 =
+    const playerX = player('X');
+    const playerO = player('O');
+    let round = 1;
+    let gameOver = false;
 
-        displayController.renderGameBoard();
+    const checkWin = (sign) => {
+        //Checking rows
+        for (let row = 0; row < 3; row++) {
+            if (
+                gameBoard.getField(row * 3) === sign &&
+                gameBoard.getField(row * 3 + 1) === sign &&
+                gameBoard.getField(row * 3 + 2) === sign
+            ) {
+                return true;
+            }
+        }
+        //Checking columns
+        for (let col = 0; col < 3; col++) {
+            if (
+                gameBoard.getField(col) === sign &&
+                gameBoard.getField(col + 3) === sign &&
+                gameBoard.getField(col + 6) === sign
+            ) {
+                return true;
+            }
+        }
+        //Checking diagonals
+        if (
+            (gameBoard.getField(0) === sign && gameBoard.getField(4) === sign && gameBoard.getField(8) === sign) ||
+            (gameBoard.getField(2) === sign && gameBoard.getField(4) === sign && gameBoard.getField(6) === sign)
+        ) {
+            return true;
+        }
+
+        return false;
+    };
+
+    const playRound = (index) => {
+        if (!gameOver && gameBoard.getField(index) === '') {
+            gameBoard.setField(index, getCurrentPlayer());
+            const check = checkWin(getCurrentPlayer());
+            if (check) {
+                console.log(round)
+                gameOver = true;
+            }
+
+        }
+        round++;
+    };
+
+    const getCurrentPlayer = () => {
+        return round % 2 === 1 ? playerX.getSign() : playerO.getSign();
+    }
+
+    return {
+        checkWin,
+        playRound
+    }
 })();
 
